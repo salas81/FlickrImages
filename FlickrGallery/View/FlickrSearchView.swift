@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FlickrSearchView: View {
-    @StateObject private var viewModel = FlickrSearchViewModel()
+    @ObservedObject private var viewModel = FlickrSearchViewModel()
     
     private let columns = [
         GridItem(.flexible(), spacing: 16),
@@ -61,7 +61,11 @@ private extension FlickrSearchView {
                             ProgressView()
                         }
                     }
-
+                    .onAppear {
+                        Task {
+                            try await viewModel.load(for: item)
+                        }
+                    }
                 }
                 .padding(.horizontal, 10)
             }

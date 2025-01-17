@@ -17,18 +17,7 @@ class FlickrSearchViewModel: ObservableObject {
     }
     
     @Published var cache: [String: CacheEntry] = [:]
-    var items: [FlickrItem] = [] {
-        didSet {
-            for item in items {
-                Task {
-                    let image = try await downloadImage(for: item)
-                    DispatchQueue.main.async {
-                        self.cache[item.id.uuidString] = .ready(image)
-                    }
-                }
-            }
-        }
-    }
+    var items: [FlickrItem] = [] 
     @Published var isLoading = false
     @Published var hasError = false
     @Published var errorMessage = ""
