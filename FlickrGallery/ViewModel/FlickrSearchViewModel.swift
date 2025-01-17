@@ -56,7 +56,9 @@ class FlickrSearchViewModel: ObservableObject {
                 self.items = items
                 for item in items {
                     let image = try await downloadImage(for: item)
-                    cache[item.id.uuidString] = .ready(image)
+                    DispatchQueue.main.async {
+                        self.cache[item.id.uuidString] = .ready(image)
+                    }
                 }
             } catch {
                 self.isLoading = false

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FlickrItemDetailView: View {
     let viewModel: FlickrItemDetailViewModel
-    @State var entry: FlickrSearchViewModel.CacheEntry?
+    @Binding var entry: FlickrSearchViewModel.CacheEntry?
     
     var body: some View {
         VStack(alignment: .center, spacing: 12) {

@@ -51,7 +51,7 @@ private extension FlickrSearchView {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(viewModel.items) { item in
                     NavigationLink {
-                        FlickrItemDetailView(viewModel: FlickrItemDetailViewModel(item: item), entry: viewModel.cache[item.id.uuidString])
+                        FlickrItemDetailView(viewModel: FlickrItemDetailViewModel(item: item), entry: $viewModel.cache[item.id.uuidString])
                     } label: {
                         if let entry = viewModel.cache[item.id.uuidString], case .ready(let image) = entry {
                             Image(uiImage: image)
