@@ -109,29 +109,5 @@ class FlickrSearchViewModel: ObservableObject {
             return UIImage(systemName: "photo")!
         }
     }
-    
-//    private func downloadImages() async -> [UUID: UIImage] {
-//        var photos = [UUID: UIImage]()
-//        
-//        for item in items {
-//            do {
-//                async let photo = downloadImageFor(item: item)
-//                photos[item.id] = try await photo
-//            } catch {
-//                photos[item.id] = UIImage(systemName: "photo")!
-//            }
-//        }
-//        
-//        return photos
-//    }
-//    
-//    func downloadImageFor(item: FlickrItem) async throws -> UIImage {
-//        do {
-//            let (data, _) = try await URLSession.shared.data(from: URL(string: item.media.m)!)
-//            return UIImage(data: data)!
-//        } catch {
-//            return UIImage(systemName: "photo")!
-//        }
-//    }
 }
 
