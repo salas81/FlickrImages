@@ -17,8 +17,6 @@ enum FlickrServiceError: Error {
     case decodingError(Error)
 }
 
-import Foundation
-
 // MARK: - FlickrService
 class FlickrService {
     private let baseURL = "https://www.flickr.com/services/feeds/photos_public.gne"
