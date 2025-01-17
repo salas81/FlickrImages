@@ -49,16 +49,19 @@ private extension FlickrSearchView {
     var photoListView: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(
-                    viewModel.items.filter({ viewModel.imageCache.keys.contains($0.id) })
-                ) { item in
-                    NavigationLink(
-                        destination: FlickrItemDetailView(viewModel: FlickrItemDetailViewModel(item: item), image: viewModel.imageCache[item.id]!)
-                    ) {
-                        Image(uiImage: viewModel.imageCache[item.id]!)
-                            .resizable()
-                            .scaledToFit()
+                ForEach(viewModel.items) { item in
+                    NavigationLink {
+                        FlickrItemDetailView(viewModel: FlickrItemDetailViewModel(item: item), entry: viewModel.cache[item.id.uuidString])
+                    } label: {
+                        if let entry = viewModel.cache[item.id.uuidString], case .ready(let image) = entry {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFit()
+                        } else {
+                            ProgressView()
+                        }
                     }
+
                 }
                 .padding(.horizontal, 10)
             }

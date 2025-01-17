@@ -11,7 +11,12 @@ import SwiftUI
 
 @MainActor
 class FlickrSearchViewModel: ObservableObject {
-    @Published var imageCache: [UUID: UIImage] = [:]
+    enum CacheEntry {
+        case inProgress(Task<UIImage, Error>)
+        case ready(UIImage)
+    }
+    
+    @Published var cache: [String: CacheEntry] = [:]
     @Published var items: [FlickrItem] = []
     @Published var isLoading = false
     @Published var hasError = false
@@ -49,7 +54,10 @@ class FlickrSearchViewModel: ObservableObject {
                 let items = try await flickrService.fetchFlickrFeed(for: query)
                 self.isLoading = false
                 self.items = items
-                self.imageCache = await self.downloadImages()
+                for item in items {
+                    let image = try await downloadImage(for: item)
+                    cache[item.id.uuidString] = .ready(image)
+                }
             } catch {
                 self.isLoading = false
                 self.hasError = true
@@ -58,28 +66,65 @@ class FlickrSearchViewModel: ObservableObject {
         }
     }
     
-    private func downloadImages() async -> [UUID: UIImage] {
-        var photos = [UUID: UIImage]()
+    func load(for item: FlickrItem) async throws -> UIImage {
+        print("Loading image for \(item.id.uuidString)")
         
-        for item in items {
-            do {
-                async let photo = downloadImageFor(item: item)
-                photos[item.id] = try await photo
-            } catch {
-                photos[item.id] = UIImage(systemName: "photo")!
+        if let cached = cache[item.id.uuidString] {
+            switch cached {
+            case .ready(let image):
+                return image
+            case .inProgress(let task):
+                Task {
+                    return try await task.value
+                }
             }
         }
         
-        return photos
+        let task = Task {
+            try await downloadImage(for: item)
+        }
+        
+        cache[item.id.uuidString] = .inProgress(task)
+
+        let image = try await task.value
+        cache[item.id.uuidString] = .ready(image)
+        
+        return image
     }
     
-    func downloadImageFor(item: FlickrItem) async throws -> UIImage {
+    private func downloadImage(for item: FlickrItem) async throws -> UIImage {
+        guard let url = URL(string: item.media.m) else { return UIImage(systemName: "photo")! }
         do {
-            let (data, _) = try await URLSession.shared.data(from: URL(string: item.media.m)!)
-            return UIImage(data: data)!
+            let (data, _) = try await URLSession.shared.data(from: url)
+            guard let image = UIImage(data: data) else { return UIImage(systemName: "photo")! }
+            return image
         } catch {
             return UIImage(systemName: "photo")!
         }
     }
+    
+//    private func downloadImages() async -> [UUID: UIImage] {
+//        var photos = [UUID: UIImage]()
+//        
+//        for item in items {
+//            do {
+//                async let photo = downloadImageFor(item: item)
+//                photos[item.id] = try await photo
+//            } catch {
+//                photos[item.id] = UIImage(systemName: "photo")!
+//            }
+//        }
+//        
+//        return photos
+//    }
+//    
+//    func downloadImageFor(item: FlickrItem) async throws -> UIImage {
+//        do {
+//            let (data, _) = try await URLSession.shared.data(from: URL(string: item.media.m)!)
+//            return UIImage(data: data)!
+//        } catch {
+//            return UIImage(systemName: "photo")!
+//        }
+//    }
 }
 

@@ -9,13 +9,17 @@ import SwiftUI
 
 struct FlickrItemDetailView: View {
     let viewModel: FlickrItemDetailViewModel
-    let image: UIImage
+    @State var entry: FlickrSearchViewModel.CacheEntry?
     
     var body: some View {
         VStack(alignment: .center, spacing: 12) {
-            Image(uiImage: image)
-                .resizable()
-                .frame(width: 300, height: 300)
+            if let entry = entry, case .ready(let image) = entry {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                ProgressView()
+            }
             
             Text(viewModel.title)
                 .font(.headline)
