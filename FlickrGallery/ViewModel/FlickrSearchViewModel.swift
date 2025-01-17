@@ -19,7 +19,7 @@ class FlickrSearchViewModel: ObservableObject {
     @Published var searchQuery: String = ""
 
     private var cancellables = Set<AnyCancellable>()
-    private let flickrService: FlickrService
+    let flickrService: FlickrService
     private var lastQuery: String?
 
     init(flickrService: FlickrService = FlickrService()) {
@@ -34,23 +34,6 @@ class FlickrSearchViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
-//    func loadImageFor(_ item: FlickrItem) async {
-//        guard let url = URL(string: item.media.m) else { return }
-//        print("Dowloaded image for \(item.id)")
-//
-//        do {
-//            let (data, _) = try await URLSession.shared.data(from: url)
-//            guard let image = UIImage(data: data) else {
-//                imageCache[item.id] = UIImage(systemName: "photo")!
-//                return
-//            }
-//            print("Dowloaded image for \(item.id)")
-//            imageCache[item.id] = image
-//        } catch {
-//            imageCache[item.id] = UIImage(systemName: "photo")!
-//        }
-//    }
 
     private func performSearch(query: String) {
         guard !query.isEmpty else {

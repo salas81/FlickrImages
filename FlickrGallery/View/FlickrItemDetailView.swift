@@ -13,14 +13,10 @@ struct FlickrItemDetailView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 12) {
-//            if let image = viewModel.image {
-                Image(uiImage: image)
-                    .resizable()
-                    .frame(width: 300, height: 300)
-//            } else {
-//                ProgressView()
-//            }
-
+            Image(uiImage: image)
+                .resizable()
+                .frame(width: 300, height: 300)
+            
             Text(viewModel.title)
                 .font(.headline)
             
